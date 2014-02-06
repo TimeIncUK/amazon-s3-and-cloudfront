@@ -333,10 +333,10 @@ class Amazon_S3_And_CloudFront extends AWS_Plugin_Base {
 			$domain_bucket = $s3object['bucket'];
 		}
 		elseif ( is_ssl() || $this->get_setting( 'force-ssl' ) ) {
-			$domain_bucket = 's3.amazonaws.com/' . $s3object['bucket'];
+			$domain_bucket = $this->get_domain() . '/' . $s3object['bucket'];
 		}
 		else {
-			$domain_bucket = $s3object['bucket'] . '.s3.amazonaws.com';
+			$domain_bucket = $s3object['bucket'] . '.' . $this->get_domain();
 		}
 
 		$url = $scheme . '://' . $domain_bucket . '/' . $s3object['key'];
@@ -354,6 +354,15 @@ class Amazon_S3_And_CloudFront extends AWS_Plugin_Base {
 
 	    return apply_filters( 'as3cf_get_attachment_url', $url, $s3object, $post_id, $expires );
 	}
+
+    function get_domain() {
+        $region = $this->aws->get_region();
+        if ($region) {
+            return 's3-'.$region.'.amazonaws.com';
+        }
+
+        return 's3.amazonaws.com';
+    }
 
 	function verify_ajax_request() {
 		if ( !is_admin() || !wp_verify_nonce( $_POST['_nonce'], $_POST['action'] ) ) {
