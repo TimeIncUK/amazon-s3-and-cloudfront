@@ -1,0 +1,16 @@
+{
+    "name"       : "ipcmedia/amazon-s3-and-cloudfront",
+    "description": "Copies files to Amazon S3 as they are uploaded to the Media Library. Optionally configure Amazon CloudFront for faster delivery.",
+    "homepage"   : "https://github.com/ipcmedia/amazon-s3-and-cloudfront/",
+    "type"       : "wordpress-plugin",
+    "license"    : "GPLv3",
+    "authors"    : [
+        {
+            "name"    : "Brad Touesnard",
+            "homepage": "http://deliciousbrains.com/"
+        }
+    ],
+    "require": {
+        "composer/installers": "~1.0"
+    }
+}
