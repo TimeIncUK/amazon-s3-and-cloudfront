@@ -20,6 +20,7 @@ class Amazon_S3_And_CloudFront extends AWS_Plugin_Base {
 
 		add_filter( 'wp_get_attachment_url', array( $this, 'wp_get_attachment_url' ), 9, 2 );
 		add_filter( 'wp_generate_attachment_metadata', array( $this, 'wp_generate_attachment_metadata' ), 20, 2 );
+		add_filter( 'wp_update_attachment_metadata', array( $this, 'wp_update_attachment_metadata' ), 20, 2 );
 		add_filter( 'delete_attachment', array( $this, 'delete_attachment' ), 20 );
 	}
 
@@ -229,6 +230,18 @@ class Amazon_S3_And_CloudFront extends AWS_Plugin_Base {
         return $data;
     }
 
+	/**
+	 * Saves the image to S3 when updated by the image editor. Uses the same
+	 * process as generating a new image
+	 *
+	 * @param array $data An array of image data to update
+	 * @param $post_id The id of the post the image belongs to as an attachment
+	 * @return array The image data array with any updates
+	 */
+	function wp_update_attachment_metadata(array $data, $post_id) {
+		return $this->wp_generate_attachment_metadata($data, $post_id);
+	}
+
     function remove_local_files( $file_paths ) {
     	foreach ( $file_paths as $path ) {
     		if ( !@unlink( $path ) ) {
@@ -339,7 +352,15 @@ class Amazon_S3_And_CloudFront extends AWS_Plugin_Base {
 			$domain_bucket = $s3object['bucket'] . '.' . $this->get_domain();
 		}
 
-		$url = $scheme . '://' . $domain_bucket . '/' . $s3object['key'];
+		// use the s3 key and the meta data for edited images to build a url
+		// that shows the edited image
+		$s3url = $s3object['key'];
+		$file_meta = get_post_meta($post_id, '_wp_attached_file');
+		if (is_array($file_meta) && isset($file_meta[0]) && preg_match('#(\d+)/(\d+)/([^/]+)$#U', $s3url, $url_components)) {
+			$s3url = preg_replace('#(\d+)/(\d+)/([^/]+)$#U', $file_meta[0], $s3url);
+		}
+
+		$url = $scheme . '://' . $domain_bucket . '/' . $s3url;
 
 		if ( !is_null( $expires ) ) {
 			try {
@@ -355,14 +376,19 @@ class Amazon_S3_And_CloudFront extends AWS_Plugin_Base {
 	    return apply_filters( 'as3cf_get_attachment_url', $url, $s3object, $post_id, $expires );
 	}
 
+    /**
+     * Gets the correct domain for AWS, taking account of the region
+     *
+     * @return string The AWS domain
+     */
     function get_domain() {
-        $region = $this->aws->get_region();
-        if ($region) {
-            return 's3-'.$region.'.amazonaws.com';
-        }
+		$region = $this->aws->get_region();
+		if ($region) {
+			return 's3-'.$region.'.amazonaws.com';
+		}
 
-        return 's3.amazonaws.com';
-    }
+		return 's3.amazonaws.com';
+	}
 
 	function verify_ajax_request() {
 		if ( !is_admin() || !wp_verify_nonce( $_POST['_nonce'], $_POST['action'] ) ) {
