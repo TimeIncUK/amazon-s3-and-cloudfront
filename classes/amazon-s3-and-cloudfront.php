@@ -352,15 +352,7 @@ class Amazon_S3_And_CloudFront extends AWS_Plugin_Base {
 			$domain_bucket = $s3object['bucket'] . '.' . $this->get_domain();
 		}
 
-		// use the s3 key and the meta data for edited images to build a url
-		// that shows the edited image
-		$s3url = $s3object['key'];
-		$file_meta = get_post_meta($post_id, '_wp_attached_file');
-		if (is_array($file_meta) && isset($file_meta[0]) && preg_match('#(\d+)/(\d+)/([^/]+)$#U', $s3url, $url_components)) {
-			$s3url = preg_replace('#(\d+)/(\d+)/([^/]+)$#U', $file_meta[0], $s3url);
-		}
-
-		$url = $scheme . '://' . $domain_bucket . '/' . $s3url;
+		$url = $scheme . '://' . $domain_bucket . '/' . $s3object['key'];
 
 		if ( !is_null( $expires ) ) {
 			try {
