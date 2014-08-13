@@ -23,6 +23,11 @@ Author URI: http://bradt.ca
 // Then completely rewritten.
 */
 
+add_action("init", function() {
+	require_once "keystone-wpcli-thumbnails.php";
+	new Keystone_WpCli_Thumbnails();
+});
+
 function as3cf_check_required_plugin() {
     if ( class_exists( 'Amazon_Web_Services' ) || !is_admin() || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
         return;
