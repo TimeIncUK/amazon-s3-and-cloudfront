@@ -37,7 +37,7 @@ class Keystone_WpCli_Thumbnails {
 	}
 
 	public function __construct() {
-		add_filter("get_attached_file", array($this, "get_image"));
+		add_filter("get_attached_file", array($this, "get_attached_file"));
 	}
 
 	/**
@@ -47,7 +47,7 @@ class Keystone_WpCli_Thumbnails {
 	 * @param string $file the path to the requested file
 	 * @return string the path to the requested file
 	 */
-	public function get_image($file) {
+	public function get_attached_file($file) {
 		$this->_file = $file;
 
 		$has_errors = false;
@@ -55,10 +55,13 @@ class Keystone_WpCli_Thumbnails {
 		if ($has_errors == false && !$this->is_requesting_local_file()) {
 			$has_errors = true;
 		}
+		
 		if ($has_errors == false && !$this->parent_dir_exists()) {
 			$has_errors = true;
 		}
-		if($has_errors == false || ($this->_url = $this->get_url() && empty(trim($this->_url)))) {
+		
+		$this->_url = $this->get_url();
+		if($has_errors == false && empty(trim($this->_url))) {
 			$has_errors = true;
 		}
 		
@@ -80,7 +83,7 @@ class Keystone_WpCli_Thumbnails {
 	 * @return bool wether it's a local file or a remote file
 	 */
 	public function is_requesting_local_file() {
-		return substr(trim($this->_file), 0, 1) != "/";
+		return substr(trim($this->_file), 0, 1) == "/";
 	}
 
 	/**
