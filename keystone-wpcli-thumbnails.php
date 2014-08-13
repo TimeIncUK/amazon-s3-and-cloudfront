@@ -68,7 +68,6 @@ class Keystone_WpCli_Thumbnails {
 		if($has_errors == false) {
 			$download = $this->download();
 			if(is_wp_error($download)) {
-				WP_CLI::warning($download);
 				return $this->_file;
 			}
 			rename($download, $this->_file);
