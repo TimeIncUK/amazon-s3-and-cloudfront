@@ -57,7 +57,7 @@ class Keystone_WpCli_Thumbnails {
 	 * Initialize the class that needs to handle the callback
 	 */
 	public static function init() {
-		new static();
+		new self();
 	}
 
 	/**

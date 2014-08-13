@@ -23,8 +23,8 @@ Author URI: http://bradt.ca
 // Then completely rewritten.
 */
 
-add_action("init", function() {
-	require_once "keystone-wpcli-thumbnails.php";
+require_once "keystone-wpcli-thumbnails.php";
+add_action("plugins_loaded", function() {	
 	Keystone_WpCli_Thumbnails::init();
 });
 
