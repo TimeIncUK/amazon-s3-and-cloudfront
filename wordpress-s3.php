@@ -24,7 +24,7 @@ Author URI: http://bradt.ca
 */
 
 require_once "keystone-wpcli-thumbnails.php";
-add_action("plugins_loaded", function() {	
+add_action("init", function() {	
 	Keystone_WpCli_Thumbnails::init();
 });
 

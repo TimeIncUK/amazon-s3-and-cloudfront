@@ -1,42 +1,5 @@
 <?php
 
-if (!function_exists("download_url")) {
-
-	function download_url($url, $timeout = 300) {
-		//WARNING: The file is not automatically deleted, The script must unlink() the file.
-		if (!$url)
-			return new WP_Error('http_no_url', __('Invalid URL Provided.'));
-
-		$tmpfname = wp_tempnam($url);
-		if (!$tmpfname)
-			return new WP_Error('http_no_file', __('Could not create Temporary file.'));
-
-		$response = wp_safe_remote_get($url, array('timeout' => $timeout, 'stream' => true, 'filename' => $tmpfname));
-
-		if (is_wp_error($response)) {
-			unlink($tmpfname);
-			return $response;
-		}
-
-		if (200 != wp_remote_retrieve_response_code($response)) {
-			unlink($tmpfname);
-			return new WP_Error('http_404', trim(wp_remote_retrieve_response_message($response)));
-		}
-
-		$content_md5 = wp_remote_retrieve_header($response, 'content-md5');
-		if ($content_md5) {
-			$md5_check = verify_file_md5($tmpfname, $content_md5);
-			if (is_wp_error($md5_check)) {
-				unlink($tmpfname);
-				return $md5_check;
-			}
-		}
-
-		return $tmpfname;
-	}
-
-}
-
 class Keystone_WpCli_Thumbnails {
 
 	/**
@@ -85,6 +48,14 @@ class Keystone_WpCli_Thumbnails {
 	 * @return string the path to the requested file
 	 */
 	public function get_attached_file($file) {
+		if(!defined("WP_CLI") 
+				|| WP_CLI != true 
+				|| !is_admin() 
+				|| !defined("DOING_AJAX") 
+				|| DOING_AJAX != true) {
+			return $file;
+		}
+
 		$this->_file = $file;
 
 		$has_errors = false;
@@ -143,6 +114,8 @@ class Keystone_WpCli_Thumbnails {
 	 * @return string the s3 URL for the requested image
 	 */
 	public function get_url() {
+		
+		
 		return sprintf("http://inspire-ipcmedia-com.s3-eu-west-1.amazonaws.com/inspirewp/live%s", substr($this->_file, stripos($this->_file, "/wp-content/")));
 	}
 
