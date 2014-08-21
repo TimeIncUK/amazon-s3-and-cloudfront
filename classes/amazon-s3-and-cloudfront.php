@@ -78,7 +78,7 @@ class Amazon_S3_And_CloudFront extends AWS_Plugin_Base {
 		$exists = true;
 		$dir = $this->get_parent_dir($file);
 
-		if (!file_exists($dir) || !is_dir($dir)) {
+		if (!is_dir($dir)) {
 			$exists = mkdir($dir, 0644, true);
 		}
 		return $exists;
