@@ -36,15 +36,7 @@ class Amazon_S3_And_CloudFront extends AWS_Plugin_Base {
 	 * @return string the local path to the requested file
 	 */
 	public function get_attached_file($file, $attachment_id) {
-		if ((!defined("WP_CLI") || WP_CLI != true )
-				AND ( !is_admin() || !defined("DOING_AJAX") || DOING_AJAX != true)) {
-			return $file;
-		}
-
-		if (!$this->is_requesting_local_file($file)) {
-			return $file;
-		}
-
+		
 		if (is_readable($file)) {
 			return $file;
 		}
@@ -58,7 +50,8 @@ class Amazon_S3_And_CloudFront extends AWS_Plugin_Base {
 		if (is_wp_error($download)) {
 			return $file;
 		}
-		@rename($download, $file);
+		
+		rename($download, $file);
 		
 		return $file;
 	}
