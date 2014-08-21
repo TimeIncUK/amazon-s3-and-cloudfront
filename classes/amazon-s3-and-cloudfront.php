@@ -51,7 +51,7 @@ class Amazon_S3_And_CloudFront extends AWS_Plugin_Base {
 			return $file;
 		}
 		
-		@rename($download, $file);
+		rename($download, $file);
 		
 		return $file;
 	}
@@ -79,7 +79,7 @@ class Amazon_S3_And_CloudFront extends AWS_Plugin_Base {
 		$dir = $this->get_parent_dir($file);
 
 		if (!is_dir($dir)) {
-			$exists = @mkdir($dir, 0755, true);
+			$exists = mkdir($dir, 0755, true);
 		}
 		return $exists;
 	}
