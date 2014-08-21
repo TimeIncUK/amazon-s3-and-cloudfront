@@ -79,19 +79,11 @@ class Amazon_S3_And_CloudFront extends AWS_Plugin_Base {
 		$dir = $this->get_parent_dir($file);
 
 		if (!is_dir($dir)) {
-			$exists = mkdir($dir, 0644, true);
+			$exists = mkdir($dir, 0755, true);
 		}
 		return $exists;
 	}
 
-	/**
-	 * Checks that the requested path starts with a forward slash
-	 * 
-	 * @return bool wether it's a local file or a remote file
-	 */
-	public function is_requesting_local_file($file) {
-		return (substr(trim($file), 0, 1) == DIRECTORY_SEPARATOR);
-	}
 
 	function get_setting($key) {
 		$settings = $this->get_settings();
