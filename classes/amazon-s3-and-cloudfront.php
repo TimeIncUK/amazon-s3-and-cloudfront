@@ -37,6 +37,10 @@ class Amazon_S3_And_CloudFront extends AWS_Plugin_Base {
 	 */
 	public function get_attached_file($file, $attachment_id) {
 		
+		if ( !defined("WP_CLI") && !is_admin()) {
+			return $file;
+		}
+		
 		if (is_readable($file)) {
 			return $file;
 		}
