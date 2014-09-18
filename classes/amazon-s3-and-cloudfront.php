@@ -292,7 +292,11 @@ class Amazon_S3_And_CloudFront extends AWS_Plugin_Base {
 
 	function remove_local_files( $file_paths ) {
 		foreach ( $file_paths as $path ) {
-			if ( ! @unlink( $path ) ) {
+			if(!file_exists($path) || !is_file($path) || !is_writable($path)) {
+				continue;
+			}
+			
+			if (!unlink( $path)) {
 				error_log( 'Error removing local file ' . $path );
 			}
 		}
