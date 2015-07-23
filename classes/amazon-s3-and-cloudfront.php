@@ -90,6 +90,7 @@ class Amazon_S3_And_CloudFront extends AWS_Plugin_Base {
 		
 		if ( ! is_dir( $dir ) ) {
 			var_dump( $dir );
+			var_dump( $file );
 			$exists = mkdir( $dir, 0755, true );
 		}
 		return $exists;
